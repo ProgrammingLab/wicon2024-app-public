@@ -1,0 +1,4 @@
+node_modules
+firebase-emulators-data
+
+.DS_Store

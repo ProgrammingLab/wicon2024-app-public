@@ -1,0 +1,78 @@
+{
+  "expo": {
+    "name": "AHGRI",
+    "slug": "ahgri",
+    "version": "1.2.1",
+    "orientation": "default",
+    "icon": "./assets/images/icon.png",
+    "scheme": "ahgri",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "isTabletOnly": true,
+      "bundleIdentifier": "club.prolab.ahgri",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "Allow $(PRODUCT_NAME) to connect to bluetooth devices",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSAllowsArbitraryLoadsInWebContent": true,
+          "NSExceptionDomains": {
+            "100.82.65.60": {
+              "NSIncludesSubdomains": true,
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        },
+        "UIFileSharingEnabled": true
+      },
+      "config": {
+        "googleMapsApiKey": ""
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": ""
+        }
+      },
+      "package": "club.prolab.ahgri"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": true,
+          "modes": ["peripheral", "central"],
+          "bluetoothAlwaysPermission": "Allow $(PRODUCT_NAME) to connect to bluetooth devices"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

@@ -1,0 +1,291 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["typedSql"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Group {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  users     GroupUserRole[]
+  ntripcasters Ntripcaster[]
+  customWeathers CustomWeather[]
+  diaryPacks DiaryPack[]
+  diary Diary[]
+  customTasks CustomTask[]
+  cropGroups CropGroup[]
+  crops Crop[]
+  fields Field[]
+  roads Road[]
+  cars Car[]
+  pesticideRegistrationNumberBookmarks PesticideRegistrationNumberBookmark[]
+  fertilizerRegistrationNumberBookmarks FertilizerRegistrationNumberBookmark[]
+}
+
+model Car {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  width Int
+  height Int
+  length Int
+  antenna_x_offset Int
+  antenna_y_offset Int
+  antenna_z_offset Int
+}
+
+model User {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  country   Country
+  groups    GroupUserRole[]
+}
+
+enum Country {
+  Japan
+  others
+}
+
+model GroupUserRole {
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  group    Group  @relation(fields: [groupId], references: [id])
+  groupId  Int
+  role     Role
+
+  @@id([userId, groupId])
+}
+
+enum Role {
+  superadmin
+  admin
+  user
+}
+
+model Ntripcaster {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  mountpoint String
+  host String
+  port Int
+  username String?
+  password String?
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+}
+
+model DiaryPack {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  averageSeasonType SeasonType
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  crop Crop @relation(fields: [cropId], references: [id])
+  cropId Int
+  field Field @relation(fields: [fieldId], references: [id])
+  fieldId Int
+  diary Diary[]
+}
+
+enum SeasonType {
+  warm
+  cool
+  average
+}
+
+model Diary {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  diaryPack DiaryPack @relation(fields: [diaryPackId], references: [id])
+  diaryPackId Int
+  pesticideRegistrationNumber Int?
+  fertilizerRegistrationNumber String?
+  pesticideAmount Float?
+  fertilizerAmount Float?
+  workerId String
+  registrerId String
+  diaryTemplateWeather DiaryTemplateWeather?
+  diaryCustomWeather DiaryCustomWeather?
+  diaryTemplateTask DiaryTemplateTask?
+  diaryCustomTask DiaryCustomTask?
+  datetime DateTime
+  type DiaryType
+  note String @default("")
+}
+
+model PesticideRegistrationNumberBookmark {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pesticideRegistrationNumber String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+}
+
+model FertilizerRegistrationNumberBookmark {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  fertilizerRegistrationNumber String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+}
+
+enum DiaryType {
+  record
+  schedule
+}
+
+
+// Diary と TemplateWeather の中間テーブル
+model DiaryTemplateWeather {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  templateWeather TemplateWeather @relation(fields: [templateWeatherId], references: [id])
+  templateWeatherId Int
+  diary Diary @relation(fields: [diaryId], references: [id])
+  diaryId Int @unique
+}
+model TemplateWeather {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  DiaryTemplateWeather DiaryTemplateWeather[]
+}
+
+// insert into "TemplateWeather" (name,"updatedAt") VALUES ('快晴',CURRENT_TIMESTAMP),('晴れ',CURRENT_TIMESTAMP),('薄曇り',CURRENT_TIMESTAMP),('曇り',CURRENT_TIMESTAMP),('煙霧',CURRENT_TIMESTAMP),('砂じん嵐',CURRENT_TIMESTAMP),('地ふぶき',CURRENT_TIMESTAMP),('霧',CURRENT_TIMESTAMP),('霧雨',CURRENT_TIMESTAMP),('雨',CURRENT_TIMESTAMP),('みぞれ',CURRENT_TIMESTAMP),('雪',CURRENT_TIMESTAMP),('あられ',CURRENT_TIMESTAMP),('ひょう',CURRENT_TIMESTAMP),('雷',CURRENT_TIMESTAMP);
+
+// Diary と CustomWeather の中間テーブル
+model DiaryCustomWeather {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  diary Diary @relation(fields: [diaryId], references: [id])
+  diaryId Int @unique
+  customWeather CustomWeather @relation(fields: [customWeatherId], references: [id])
+  customWeatherId Int
+}
+model CustomWeather {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  diaryCustomWeather DiaryCustomWeather[]
+}
+
+
+// Diary と TemplateTask の中間テーブル
+model DiaryTemplateTask {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  templateTask TemplateTask @relation(fields: [templateTaskId], references: [id])
+  templateTaskId Int
+  diary Diary @relation(fields: [diaryId], references: [id])
+  diaryId Int @unique
+}
+model TemplateTask {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  diaryTemplateTask DiaryTemplateTask[]
+}
+// insert into "TemplateTask" (name,"updatedAt") VALUES ('播種',CURRENT_TIMESTAMP),('消毒（農薬散布）',CURRENT_TIMESTAMP),('収穫',CURRENT_TIMESTAMP);
+
+// Diary と CustomTask の中間テーブル
+model DiaryCustomTask {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  customTask CustomTask @relation(fields: [customTaskId], references: [id])
+  customTaskId Int
+  diary Diary @relation(fields: [diaryId], references: [id])
+  diaryId Int @unique
+}
+model CustomTask {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  cropGroups CropGroup @relation(fields: [cropGroupId], references: [id])
+  cropGroupId Int
+  DiaryCustomTask DiaryCustomTask[]
+}
+
+model CropGroup {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  cropVarieties Crop[]
+  customTasks CustomTask[]
+}
+
+model Crop {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  cropGroup CropGroup @relation(fields: [cropGroupId], references: [id])
+  cropGroupId Int
+  diaryPack DiaryPack[]
+}
+
+model Field {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  area Float
+  diaryPacks DiaryPack[]
+  coordinate Unsupported("polygon")
+  road Road[]
+}
+
+model Road {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  field Field @relation(fields: [fieldId], references: [id])
+  fieldId Int
+  coordinates Unsupported("path")
+}

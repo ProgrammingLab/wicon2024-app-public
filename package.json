@@ -1,0 +1,45 @@
+{
+  "name": "wicon-workspace",
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "^7.1.2",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.36.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.6",
+    "prettier": "^3.3.3",
+    "typescript-eslint": "^8.7.0"
+  },
+  "private": true,
+  "scripts": {
+    "prepare": "husky || true"
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@prisma/client",
+    "@prisma/engines",
+    "@swc/core",
+    "core-js",
+    "esbuild",
+    "prisma",
+    "protobufjs",
+    "re2",
+    "vue-demi"
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.2.0",
+    "@mui/x-date-pickers": "^7.23.2",
+    "@types/xlsx": "^0.0.36",
+    "dayjs": "^1.11.13",
+    "expo-file-system": "~17.0.1",
+    "expo-sharing": "~12.0.1",
+    "xlsx": "^0.18.5"
+  }
+}

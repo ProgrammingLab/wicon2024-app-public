@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}

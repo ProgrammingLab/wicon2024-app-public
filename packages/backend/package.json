@@ -1,0 +1,34 @@
+{
+  "name": "backend",
+  "scripts": {
+    "local-server": "concurrently --restart-tries 10 --restart-after 10000 --timings --names db,backend,firebase,prisma,migration,mockdata,honoClient -c gray,green,blue,cyan,white --kill-others-on-fail bun:db bun:backend bun:firebase bun:prisma bun:migration 'bun mockdata.ts' 'tsc -p tsconfig.json --watch --outDir dist -d'  --teardown 'docker compose down --volumes --remove-orphans'",
+    "backend": "run-script-os",
+    "backend:darwin": "FIREBASE_AUTH_EMULATOR_HOST='localhost:9099' bun run --hot src/index.ts",
+    "backend:win32": "set FIREBASE_AUTH_EMULATOR_HOST='127.0.0.1:9099' & bun run --hot src/index.ts",
+    "prisma": "prisma generate --watch --sql",
+    "db": "docker compose up",
+    "migration": "run-script-os",
+    "migration:darwin": "sleep 5 && prisma migrate dev",
+    "migration:win32": "timeout 5 & prisma migrate dev",
+    "firebase": "firebase emulators:start --import ./.firebase-emulators"
+  },
+  "dependencies": {
+    "@hono/swagger-ui": "^0.5.0",
+    "@hono/zod-openapi": "^0.18.3",
+    "@hono/zod-validator": "^0.2.2",
+    "@prisma/client": "^5.22.0",
+    "client": "workspace:*",
+    "firebase-admin": "^12.6.0",
+    "hono": "^4.6.16",
+    "prisma": "^5.22.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.22.0",
+    "globals": "^15.11.0",
+    "@types/bun": "latest",
+    "concurrently": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "run-script-os": "^1.1.6"
+  }
+}
